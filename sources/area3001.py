@@ -14,7 +14,7 @@ CHANNEL = const(1)
 TX_DELAY = const(1)
 NEOPIXEL_PIN = const(2)
 FRAMERATE = const(30)
-STRAND_LENGTH = const(5)
+STRAND_LENGTH = const(26)
 
 def log(*args):
     if DEBUG:
@@ -77,7 +77,7 @@ def process_wheel(strand, pixel_index, r, offset):
             strand[pixel_index+i] = wheel(i*steps+offset,50)
     if r[1] == "<":
         for i in range(0, pixels):
-            strand[pixel_index+(pixels-i-1)] = wheel((pixels-i)*steps+offset)
+            strand[pixel_index+(pixels-i-1)] = wheel((pixels-i)*steps+offset,100)
     return pixels
 
 def show_frame(strand, animation, frame_num):
@@ -89,8 +89,16 @@ def show_frame(strand, animation, frame_num):
     for r in active_frame[1:]:
         if len(r[0]) == 3: pixel_index += process_rgb(buffer, pixel_index, r)
         if r[0] == "W": pixel_index += process_wheel(buffer, pixel_index, r, (max_frame-frame_num)*5)
-    for i in range(STRAND_LENGTH):
-        strand[i] = buffer[animation["mapping"][i]]
+        
+    #apply mapping
+    if "mapping" in animation:
+        mapping_size = min(len(animation["mapping"]),STRAND_LENGTH)
+        for i in range(mapping_size):
+            strand[i] = buffer[animation["mapping"][i]]
+    else:
+        for i in range(STRAND_LENGTH):
+            strand[i] = buffer[i]
+ 
     strand.write()
 
 async def animation_task(network_time_service, pin):
