@@ -7,7 +7,7 @@ import neopixel
 import network
 import time
 
-from animations import Fri3d2022 as animation
+from animations import Area3001Aniversary_A as animation
 
 DEBUG = const(False)
 CHANNEL = const(1)
